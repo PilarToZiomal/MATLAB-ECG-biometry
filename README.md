@@ -78,8 +78,8 @@ Generated outputs are written to `outputs/`:
 Clone the repository and open it in MATLAB:
 
 ```bash
-git clone https://github.com/USER/REPO.git  # TODO: replace with actual repo URL
-cd REPO
+git clone https://github.com/PilarToZiomal/MATLAB-ECG-biometry.git
+cd MATLAB-ECG-biometry
 ```
 
 Then in MATLAB:
