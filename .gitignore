@@ -1,0 +1,8 @@
+# Data and generated outputs
+Data/
+outputs/
+
+# MATLAB artifacts
+*.asv
+*.m~
+
