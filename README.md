@@ -1,4 +1,4 @@
-# CPS\_proj
+# ECG-biometry
 
 Pipeline for person identification from physiological signals (respiration, pulse, ECG).
 
