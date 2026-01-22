@@ -5,7 +5,7 @@ cfg = struct();
 cfg.fs = 100;
 cfg.seed = 42;
 
-cfg.data_dir = "/home/pawel/Documents/MATLAB/CPS_proj/Data";
+cfg.data_dir = "/PATHTODATA";
 cfg.out_dir  = "outputs";
 cfg.fig_dir  = fullfile(cfg.out_dir, "figures");
 cfg.res_dir  = fullfile(cfg.out_dir, "results");
