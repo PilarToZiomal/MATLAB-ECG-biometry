@@ -1,4 +1,4 @@
-# ECG-biometry
+# CPS\_proj
 
 Pipeline for person identification from physiological signals (respiration, pulse, ECG).
 
@@ -9,6 +9,7 @@ Pipeline for person identification from physiological signals (respiration, puls
 - `run_gridsearch_dev.m` grid-search on DEV split.
 - `eval_final_test.m` evaluate top DEV configs on held-out TEST.
 - `report_figures.m` generate report plots into `outputs/figures`.
+- `config.m` central configuration for sampling rate, filtering, windowing, features, and model defaults.
 - `src/` helper functions (loading, preprocessing, features, training).
 - `Data/` input recordings (not included in repo).
 - `outputs/` generated results and figures.
@@ -51,7 +52,8 @@ Generated outputs are written to `outputs/`:
   - `results.mat` metrics and metadata from `main_experiment`.
 - `outputs/figures/`:
   - `raw_vs_filtered_time.png`, `psd_*`, `ecg_rpeaks.png`, `rr_histogram.png`,
-    `confusion_matrix.png`, `pca_features_pc1_pc2.png`, `macroF1_vs_window_length.png`.
+    `confusion_matrix.png`, `pca_features_pc1_pc2.png`, `fft_window_rect_vs_hann.png`,
+    `macroF1_vs_window_length.png`, `top1_ofat_*.png`.
 
 ## Quick start
 
@@ -60,6 +62,7 @@ Generated outputs are written to `outputs/`:
    ```
    run_gridsearch_dev
    ```
+   Grid-search parameters (windowing, bands, SVM settings) are defined at the top of `run_gridsearch_dev.m`.
 3. Evaluate top configs on TEST:
    ```
    eval_final_test
@@ -72,6 +75,8 @@ Generated outputs are written to `outputs/`:
    ```
    report_figures
    ```
+   This will also create OFAT plots (`top1_ofat_*.png`) showing the impact of changing one parameter at a time
+   around the best DEV configuration.
 
 ## Install from GitHub
 

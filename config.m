@@ -5,21 +5,21 @@ cfg = struct();
 cfg.fs = 100;
 cfg.seed = 42;
 
-cfg.data_dir = "/Data";
+cfg.data_dir = "/home/pawel/Documents/MATLAB/CPS_proj/Data";
 cfg.out_dir  = "outputs";
 cfg.fig_dir  = fullfile(cfg.out_dir, "figures");
 cfg.res_dir  = fullfile(cfg.out_dir, "results");
 
 % Channel-specific bandpass ranges (Hz); tune based on physiology + data quality
 cfg.filt_order = 4;
-cfg.resp_band  = [0.1 0.7];
-cfg.pulse_band = [0.7  4.0];
-cfg.ecg_band   = [1.0 35.0];
+cfg.resp_band  = [0.1 0.6];
+cfg.pulse_band = [0.7  5.0];
+cfg.ecg_band   = [1.0 20.0];
 
 % Windowing for feature extraction (controls time/frequency resolution trade-off)
 cfg.win_sec     = 16;
-cfg.overlap     = 0.50;
-cfg.win_type    = "rect";  % "rect" | "hann" | "hamming"
+cfg.overlap     = 0.25;
+cfg.win_type    = "hann";  % "rect" | "hann" | "hamming"
 
 % Separate (longer) windowing for HRV can be used if you decide to compute HRV on longer segments
 cfg.hrv_win_sec   = 60;
@@ -49,7 +49,7 @@ cfg.qrs_ignore_s    = 0.5;
 cfg.cv_mode = "LOFO";   % "LOFO" keeps all windows from the same file together; "LOSO" keeps subjects together
 cfg.model   = "svm";    % "svm" | "knn"
 cfg.svm_kernel = "linear"; % "rbf" | "linear"
-cfg.svm_C = 10;
+cfg.svm_C = 15;
 cfg.knn_k = 5;
 
 % HRV feature reliability guard (skip HRV if too few RR intervals in a window)

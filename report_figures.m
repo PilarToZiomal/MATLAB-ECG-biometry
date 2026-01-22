@@ -186,7 +186,7 @@ else
     warning("results.mat not found in outputs/results; run main_experiment first to get confusion matrix.");
 end
 
-% ---------- 6) Macro-F1 vs window length (from gridsearch_dev.csv) + top-10 table ----------
+% ---------- 6) DEV grid-search summaries (from gridsearch_dev.csv) ----------
 gridCSV = fullfile(cfg.res_dir, "gridsearch_dev.csv");
 if exist(gridCSV, "file")
     R = readtable(gridCSV);
@@ -204,13 +204,22 @@ if exist(gridCSV, "file")
         xlabel("Window length [s]"); ylabel("Best DEV Macro-F1");
         title("Best Macro-F1 vs window length (DEV grid-search)");
         savefig_png(fig, fullfile(cfg.fig_dir, "macroF1_vs_window_length.png"));
+    else
+        warning("gridsearch_dev.csv missing expected columns (win_sec, F1_macro).");
+    end
 
-        % Save top-10 table
+    % Top-1 one-factor-at-a-time plots (vary one param, keep others fixed)
+    if all(ismember(["accuracy","F1_macro"], R.Properties.VariableNames))
+        plot_top1_ofat(R, cfg.fig_dir);
+    else
+        warning("gridsearch_dev.csv missing expected columns (accuracy, F1_macro).");
+    end
+
+    % Save top-10 table
+    if any(strcmpi(R.Properties.VariableNames, "F1_macro"))
         R2 = sortrows(R, "F1_macro", "descend");
         top10 = R2(1:min(10,height(R2)), :);
         writetable(top10, fullfile(cfg.res_dir, "gridsearch_top10.csv"));
-    else
-        warning("gridsearch_dev.csv missing expected columns (win_sec, F1_macro).");
     end
 else
     warning("gridsearch_dev.csv not found; run run_gridsearch_dev first to get F1 vs window length.");
@@ -227,4 +236,88 @@ e = movmean(x.^2, segN, "Endpoints", "shrink");
 [~, i] = max(e);
 idx0 = max(1, i - segN + 1);
 idx0 = min(idx0, N - segN + 1);
+end
+
+
+function plot_top1_ofat(R, fig_dir)
+%PLOT_TOP1_OFAT Plot ACC/F1 while varying one parameter, others fixed to TOP-1.
+if ~all(ismember(["accuracy","F1_macro"], R.Properties.VariableNames))
+    return;
+end
+
+R2 = sortrows(R, ["F1_macro","accuracy"], "descend");
+base = R2(1,:);
+
+params_num = ["win_sec","overlap","svm_C"];
+params_cat = ["win_type","svm_kernel","resp_band","pulse_band","ecg_band"];
+
+for p = params_num
+    if any(strcmpi(R.Properties.VariableNames, p))
+        plot_ofat_numeric(R, base, p, fig_dir);
+    end
+end
+for p = params_cat
+    if any(strcmpi(R.Properties.VariableNames, p))
+        plot_ofat_categorical(R, base, p, fig_dir);
+    end
+end
+end
+
+function plot_ofat_numeric(R, base, param, fig_dir)
+mask = true(height(R),1);
+vars = R.Properties.VariableNames;
+for i = 1:numel(vars)
+    v = vars{i};
+    if strcmpi(v, param) || strcmpi(v, "accuracy") || strcmpi(v, "F1_macro") || strcmpi(v, "n_windows")
+        continue;
+    end
+    mask = mask & strcmp(string(R.(v)), string(base.(v)));
+end
+S = R(mask,:);
+if height(S) < 2; return; end
+
+[x, order] = sort(S.(param));
+acc = S.accuracy(order);
+f1  = S.F1_macro(order);
+
+fig = figure('Name', sprintf('Top1_OFAT_%s', param));
+plot(x, acc, '-o'); hold on;
+plot(x, f1,  '-o');
+grid on;
+xlabel(strrep(param, "_", " "));
+ylabel("DEV score");
+title(sprintf("TOP1 OFAT: %s", strrep(param, "_", " ")));
+legend("ACC", "F1_macro", "Location", "best");
+savefig_png(fig, fullfile(fig_dir, sprintf("top1_ofat_%s.png", param)));
+end
+
+function plot_ofat_categorical(R, base, param, fig_dir)
+mask = true(height(R),1);
+vars = R.Properties.VariableNames;
+for i = 1:numel(vars)
+    v = vars{i};
+    if strcmpi(v, param) || strcmpi(v, "accuracy") || strcmpi(v, "F1_macro") || strcmpi(v, "n_windows")
+        continue;
+    end
+    mask = mask & strcmp(string(R.(v)), string(base.(v)));
+end
+S = R(mask,:);
+if height(S) < 2; return; end
+
+vals = string(S.(param));
+[u, ia] = unique(vals, "stable");
+acc = S.accuracy(ia);
+f1  = S.F1_macro(ia);
+
+x = 1:numel(u);
+fig = figure('Name', sprintf('Top1_OFAT_%s', param));
+plot(x, acc, '-o'); hold on;
+plot(x, f1,  '-o');
+grid on;
+set(gca, "XTick", x, "XTickLabel", u);
+xlabel(strrep(param, "_", " "));
+ylabel("DEV score");
+title(sprintf("TOP1 OFAT: %s", strrep(param, "_", " ")));
+legend("ACC", "F1_macro", "Location", "best");
+savefig_png(fig, fullfile(fig_dir, sprintf("top1_ofat_%s.png", param)));
 end

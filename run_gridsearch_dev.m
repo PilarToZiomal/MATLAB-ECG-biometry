@@ -16,16 +16,16 @@ disp(groupsummary(Tdev, "subject_id"));
 disp(groupsummary(Ttest, "subject_id"));
 
 % Small, meaningful parameter grid for DSP + SVM tuning
-win_secs    = [8 16];
-overlaps    = 0.50;
+win_secs    = [8 16 32];
+overlaps    = [0.25 0.50 0.75];
 win_types   = ["rect","hann","hamming"];
 
-resp_bands  = [0.10 0.70];
-pulse_bands = [0.70 4.00; 0.70 5.00];
-ecg_bands   = [0.50 35.0; 1.00 35.0];
+resp_bands  = [0.10 0.60; 0.10 0.70; 0.12 0.80];
+pulse_bands = [0.60 3.50; 0.70 4.00; 0.70 5.00; 0.80 4.50];
+ecg_bands   = [0.50 35.0; 1.00 35.0; 0.50 40.0; 1.00 40.0 ; 0.50 20.0; 1.00 20.0; 0.50 10.0; 1.00 10.0];
 
 svm_kernels = ["linear","rbf"];
-svm_Cs      = [1 10];
+svm_Cs      = [1 5 10 15 20];
 
 rows = {};
 k = 0;
